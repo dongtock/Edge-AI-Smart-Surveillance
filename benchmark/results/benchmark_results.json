@@ -1,0 +1,154 @@
+[
+    {
+        "filename": "yolov8n_fp16.engine",
+        "info": {
+            "size": "Nano",
+            "precision": "FP16"
+        },
+        "metrics": {
+            "f1_score": 0.8137,
+            "map50": 0.8802,
+            "map50_95": 0.6014,
+            "precision": 0.8183,
+            "recall": 0.8091
+        },
+        "performance": {
+            "fps": 168.95,
+            "inference_ms": 2.35,
+            "total_latency_ms": 5.92
+        }
+    },
+    {
+        "filename": "yolov8n_int8.engine",
+        "info": {
+            "size": "Nano",
+            "precision": "INT8"
+        },
+        "metrics": {
+            "f1_score": 0.8057,
+            "map50": 0.873,
+            "map50_95": 0.5582,
+            "precision": 0.8091,
+            "recall": 0.8023
+        },
+        "performance": {
+            "fps": 180.7,
+            "inference_ms": 1.84,
+            "total_latency_ms": 5.53
+        }
+    },
+    {
+        "filename": "yolov8s_fp16.engine",
+        "info": {
+            "size": "Small",
+            "precision": "FP16"
+        },
+        "metrics": {
+            "f1_score": 0.8277,
+            "map50": 0.8929,
+            "map50_95": 0.6379,
+            "precision": 0.8335,
+            "recall": 0.822
+        },
+        "performance": {
+            "fps": 147.14,
+            "inference_ms": 3.3,
+            "total_latency_ms": 6.8
+        }
+    },
+    {
+        "filename": "yolov8s_int8.engine",
+        "info": {
+            "size": "Small",
+            "precision": "INT8"
+        },
+        "metrics": {
+            "f1_score": 0.7945,
+            "map50": 0.8462,
+            "map50_95": 0.4864,
+            "precision": 0.7878,
+            "recall": 0.8012
+        },
+        "performance": {
+            "fps": 163.88,
+            "inference_ms": 2.48,
+            "total_latency_ms": 6.1
+        }
+    },
+    {
+        "filename": "yolov8m_fp16.engine",
+        "info": {
+            "size": "Medium",
+            "precision": "FP16"
+        },
+        "metrics": {
+            "f1_score": 0.8323,
+            "map50": 0.8982,
+            "map50_95": 0.6525,
+            "precision": 0.8336,
+            "recall": 0.831
+        },
+        "performance": {
+            "fps": 92.38,
+            "inference_ms": 7.07,
+            "total_latency_ms": 10.83
+        }
+    },
+    {
+        "filename": "yolov8m_int8.engine",
+        "info": {
+            "size": "Medium",
+            "precision": "INT8"
+        },
+        "metrics": {
+            "f1_score": 0.7534,
+            "map50": 0.7865,
+            "map50_95": 0.3949,
+            "precision": 0.7235,
+            "recall": 0.7858
+        },
+        "performance": {
+            "fps": 114.94,
+            "inference_ms": 4.93,
+            "total_latency_ms": 8.7
+        }
+    },
+    {
+        "filename": "yolov8l_fp16.engine",
+        "info": {
+            "size": "Large",
+            "precision": "FP16"
+        },
+        "metrics": {
+            "f1_score": 0.8319,
+            "map50": 0.8981,
+            "map50_95": 0.6594,
+            "precision": 0.8371,
+            "recall": 0.8268
+        },
+        "performance": {
+            "fps": 67.75,
+            "inference_ms": 10.85,
+            "total_latency_ms": 14.76
+        }
+    },
+    {
+        "filename": "yolov8l_int8.engine",
+        "info": {
+            "size": "Large",
+            "precision": "INT8"
+        },
+        "metrics": {
+            "f1_score": 0.736,
+            "map50": 0.7608,
+            "map50_95": 0.3904,
+            "precision": 0.6877,
+            "recall": 0.7917
+        },
+        "performance": {
+            "fps": 96.88,
+            "inference_ms": 6.53,
+            "total_latency_ms": 10.32
+        }
+    }
+]
