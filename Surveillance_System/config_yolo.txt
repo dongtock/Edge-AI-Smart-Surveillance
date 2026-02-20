@@ -1,0 +1,25 @@
+[property]
+gpu-id = 0
+net-scale-factor = 0.0039215697906911373
+model-color-format = 0
+gie-unique-id = 1
+onnx-file = models/yolov8n_fp32.onnx
+model-engine-file = ./models/yolov8n_fp16.engine
+infer-dims = 3;640;640
+batch-size = 1
+network-mode = 2
+network-type = 0
+num-detected-classes = 1
+interval = 0
+use-dla-core = -1
+class-id-admit-list = 0
+cluster-mode = 2
+maintain-aspect-ratio = 1
+parse-bbox-func-name = NvDsInferParseYolo
+custom-lib-path = models/libnvdsinfer_custom_impl_Yolo.so
+
+[class-attrs-all]
+nms-iou-threshold = 0.45
+pre-cluster-threshold = 0.2
+topk = 300
+

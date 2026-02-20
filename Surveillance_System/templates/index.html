@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGX Orin System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #09090b; --bg-card: #18181b; --border: #27272a;
+            --text-main: #e4e4e7; --text-muted: #a1a1aa;
+            
+            /* [수정] 메인 포인트 컬러를 초록색으로 변경 */
+            --box-color: #22c55e; 
+            
+            /* [추가] 라이브 전용 빨간색 */
+            --live-red: #ef4444;
+            
+            --accent-color: #3b82f6;
+        }
+        body { background-color: var(--bg-main); color: var(--text-main); font-family: 'Inter', sans-serif; margin: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        
+        header { height: 60px; padding: 0 25px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .header-brand { display: flex; align-items: center; gap: 15px; }
+        .logo-img { height: 35px; width: auto; filter: invert(1) grayscale(1) brightness(2); mix-blend-mode: screen; } 
+        .system-divider { height: 20px; width: 1px; background: #444; }
+        .system-name { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; letter-spacing: -0.5px; }
+        .header-controls { display: flex; align-items: center; gap: 15px; }
+        
+        /* [수정] 라이브 인디케이터만 빨간색 고정 */
+        .live-indicator { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--live-red); }
+        .live-dot { width: 8px; height: 8px; background: var(--live-red); border-radius: 50%; animation: blink 2s infinite; }
+        
+        .btn-settings { background: var(--bg-main); border: 1px solid var(--border); color: var(--text-main); padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-settings:hover { background: var(--border); color: #fff; }
+
+        .layout { flex: 1; display: flex; padding: 20px; gap: 20px; overflow: hidden; }
+        
+        .video-panel { flex: 1; background: #000; border-radius: 12px; overflow: hidden; position: relative; border: 1px solid var(--border); display: flex; justify-content: center; align-items: center; }
+        .video-img { width: 100%; height: 100%; object-fit: contain; }
+        
+        .overlay-label { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.7); padding: 6px 12px; border-radius: 6px; font-family: 'JetBrains Mono'; font-size: 13px; font-weight: 700; color: #fff; z-index: 10; border: 1px solid rgba(255,255,255,0.1); }
+        .fps-value { color: var(--box-color); margin-left: 5px; }
+
+        .sidebar { width: 340px; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+        .counter { padding: 30px; text-align: center; border-bottom: 1px solid var(--border); }
+        .count-val { font-size: 80px; font-weight: 800; color: var(--box-color); line-height: 1; letter-spacing: -2px; }
+        .count-label { font-size: 13px; color: var(--text-muted); font-weight: 600; margin-top: 10px; text-transform: uppercase; }
+        
+        .table-wrap { flex: 1; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+        th { text-align: left; color: var(--text-muted); padding: 12px 15px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg-card); }
+        td { padding: 10px 15px; border-bottom: 1px solid var(--border); color: var(--text-main); }
+        .col-id { color: var(--box-color); font-weight: 700; }
+
+        .modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal { width: 700px; height: 500px; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .modal-head { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-weight: 700; }
+        
+        .modal-body { display: flex; flex: 1; overflow: hidden; }
+        .modal-sidebar { width: 180px; background: #111; padding: 20px; border-right: 1px solid var(--border); }
+        .menu-item { padding: 10px; margin-bottom: 5px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-muted); transition: 0.2s; }
+        .menu-item:hover { background: #222; color: #fff; }
+        .menu-item.active { background: #222; color: #fff; border-left: 3px solid var(--box-color); }
+        
+        .modal-content { flex: 1; padding: 25px; overflow-y: auto; }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; animation: fade 0.3s; }
+        
+        .control-group { margin-bottom: 25px; }
+        .control-label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted); }
+        input[type="range"] { width: 100%; accent-color: var(--box-color); }
+        select { width: 100%; padding: 10px; background: #111; border: 1px solid var(--border); color: #fff; border-radius: 6px; }
+        .btn-primary { width: 100%; padding: 12px; background: #fff; color: #000; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        .btn-primary:hover { background: #ddd; }
+        
+        .stat-row { margin-bottom: 15px; }
+        .stat-label { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 5px; color: var(--text-muted); }
+        .progress-bg { width: 100%; height: 6px; background: #333; border-radius: 3px; }
+        .progress-fill { height: 100%; background: var(--accent-color); width: 0%; border-radius: 3px; transition: width 0.5s; }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        @keyframes fade { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-brand">
+            <img src="/static/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
+            <div class="system-divider"></div>
+            <span class="system-name">AGX ORIN :: SYSTEM</span>
+        </div>
+        <div class="header-controls">
+            <div class="live-indicator"><div class="live-dot"></div> LIVE MONITORING</div>
+            <button class="btn-settings" onclick="openModal()">⚙️ CONFIGURATION</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <div class="video-panel">
+            <img src="/video_feed" class="video-img">
+            <div class="overlay-label">INFERENCE FPS: <span id="fps" class="fps-value">--</span></div>
+        </div>
+        
+        <div class="sidebar">
+            <div class="counter">
+                <div class="count-val" id="objCount">0</div>
+                <div class="count-label">DETECTED OBJECTS</div>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>ID</th><th>CONF</th><th>BOX [x,y,w,h]</th></tr></thead>
+                    <tbody id="dataTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal-bg">
+        <div class="modal">
+            <div class="modal-head">
+                <span>SYSTEM CONFIGURATION</span>
+                <span onclick="closeModal()" style="cursor:pointer; font-size:20px;">✕</span>
+            </div>
+            <div class="modal-body">
+                <div class="modal-sidebar">
+                    <div class="menu-item active" onclick="switchTab('tab-model', this)">📦 모델 설정</div>
+                    <div class="menu-item" onclick="switchTab('tab-thresh', this)">🎚️ 임계값 조절</div>
+                    <div class="menu-item" onclick="switchTab('tab-system', this)">📊 시스템 정보</div>
+                </div>
+                <div class="modal-content">
+                    <form id="configForm" onsubmit="saveSettings(event)">
+                        
+                        <div id="tab-model" class="tab-pane active">
+                            <div class="control-group">
+                                <label class="control-label">ACTIVE MODEL</label>
+                                <select name="model_file">
+                                    {% for m in models %}
+                                    <option value="{{ m }}" {% if m == current_model %}selected{% endif %}>{{ m }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="control-group" style="border:1px dashed #444; padding:15px; text-align:center; border-radius:6px; cursor:pointer;" onclick="document.getElementById('fUp').click()">
+                                <span style="font-size:12px; color:#aaa;">+ Upload .engine File</span>
+                                <input type="file" id="fUp" accept=".engine" style="display:none" onchange="uploadModel(this)">
+                            </div>
+                        </div>
+
+                        <div id="tab-thresh" class="tab-pane">
+                            <div class="control-group">
+                                <div class="stat-label"><span>CONFIDENCE</span><span id="cVal">{{ conf }}</span></div>
+                                <input type="range" name="conf_thresh" min="0.1" max="1.0" step="0.05" value="{{ conf }}" oninput="document.getElementById('cVal').innerText=this.value">
+                            </div>
+                            <div class="control-group">
+                                <div class="stat-label"><span>IOU (NMS)</span><span id="iVal">{{ iou }}</span></div>
+                                <input type="range" name="iou_thresh" min="0.1" max="1.0" step="0.05" value="{{ iou }}" oninput="document.getElementById('iVal').innerText=this.value">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary" id="saveBtn">APPLY & RESTART</button>
+
+                        <div id="tab-system" class="tab-pane">
+                            <div style="margin-bottom:20px; font-weight:700; border-bottom:1px solid #333; padding-bottom:10px;">REAL-TIME STATUS</div>
+                            <div class="stat-row">
+                                <div class="stat-label"><span>CPU LOAD</span><span id="cpuTxt">0%</span></div>
+                                <div class="progress-bg"><div class="progress-fill" id="cpuBar" style="background:#3b82f6;"></div></div>
+                            </div>
+                            <div class="stat-row">
+                                <div class="stat-label"><span>RAM USAGE</span><span id="ramTxt">0GB</span></div>
+                                <div class="progress-bg"><div class="progress-fill" id="ramBar" style="background:#a855f7;"></div></div>
+                            </div>
+                            
+                            <div class="stat-row" style="margin-bottom: 5px;">
+                                <div class="stat-label"><span>GPU USAGE</span><span id="gpuTxt" style="color:#22c55e;">0.0%</span></div>
+                                <canvas id="gpuGraph" width="300" height="40" style="background:#111; border:1px solid var(--border); border-radius:4px; width:100%; display:block;"></canvas>
+                            </div>
+                            
+                            <div class="stat-row">
+                                <div class="stat-label"><span>GPU TEMP</span><span id="gpuTempTxt" style="color:#ef4444;">0°C</span></div>
+                                <div class="progress-bg"><div class="progress-fill" id="gpuTempBar" style="background:#ef4444;"></div></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let lastLogTime = 0;
+        let lastSysTime = 0; 
+        const gpuData = new Array(60).fill(0);
+
+        setInterval(async () => {
+            try {
+                const res = await fetch('/data');
+                const data = await res.json();
+                
+                document.getElementById('objCount').innerText = data.count;
+                document.getElementById('fps').innerText = data.fps || '--';
+                
+                const now = Date.now();
+                if(now - lastLogTime > 500) { 
+                    if(data.objects && data.objects.length > 0) {
+                        const o = data.objects[0];
+                        const box = o.bbox.map(v => Math.round(v)).join(', ');
+                        
+                        const newRow = `
+                            <tr>
+                                <td class="col-id">ID ${o.id}</td>
+                                <td>${(o.conf*100).toFixed(0)}%</td>
+                                <td style="font-size:11px; color:#888">[${box}]</td>
+                            </tr>
+                        `;
+
+                        const tbody = document.getElementById('dataTable');
+                        tbody.insertAdjacentHTML('afterbegin', newRow);
+
+                        if(tbody.childElementCount > 20) {
+                            tbody.lastElementChild.remove();
+                        }
+                        lastLogTime = now;
+                    }
+                }
+
+                if(document.getElementById('settingsModal').style.display === 'flex') {
+                    if (now - lastSysTime > 1000) {
+                        const sRes = await fetch('/api/system_stats');
+                        const s = await sRes.json();
+                        
+                        document.getElementById('cpuTxt').innerText = s.cpu + '%';
+                        document.getElementById('cpuBar').style.width = s.cpu + '%';
+                        document.getElementById('ramTxt').innerText = s.ram_used + 'GB';
+                        document.getElementById('ramBar').style.width = s.ram_percent + '%';
+
+                        const gpuVal = s.gpu || 0;
+                        document.getElementById('gpuTxt').innerText = gpuVal.toFixed(1) + '%';
+                        
+                        gpuData.push(gpuVal);
+                        gpuData.shift();
+                        
+                        const canvas = document.getElementById('gpuGraph');
+                        if (canvas) {
+                            const ctx = canvas.getContext('2d');
+                            const barWidth = canvas.width / gpuData.length;
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            ctx.fillStyle = '#22c55e';
+                            for(let i = 0; i < gpuData.length; i++) {
+                                const h = (gpuData[i] / 100) * canvas.height; 
+                                ctx.fillRect(i * barWidth, canvas.height - h, barWidth - 1, h);
+                            }
+                        }
+
+                        const gpuTemp = s.gpu_temp || 0;
+                        document.getElementById('gpuTempTxt').innerText = gpuTemp.toFixed(1) + '°C';
+                        document.getElementById('gpuTempBar').style.width = Math.min((gpuTemp / 100) * 100, 100) + '%';
+
+                        lastSysTime = now;
+                    }
+                }
+            } catch(e){}
+        }, 100);
+
+        function openModal() { 
+            document.getElementById('settingsModal').style.display = 'flex'; 
+            switchTab('tab-model', document.querySelector('.menu-item')); 
+            lastSysTime = 0; 
+        }
+        function closeModal() { document.getElementById('settingsModal').style.display = 'none'; }
+        
+        function switchTab(id, el) {
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('saveBtn').style.display = (id === 'tab-system') ? 'none' : 'block';
+        }
+
+        async function saveSettings(e) {
+            e.preventDefault();
+            if(!confirm("재시작 하시겠습니까?")) return;
+            const fd = new FormData(document.getElementById('configForm'));
+            await fetch('/api/save_settings', {method:'POST', body:fd});
+            location.reload();
+        }
+
+        async function uploadModel(input) {
+            if(!input.files[0]) return;
+            const fd = new FormData(); fd.append("file", input.files[0]);
+            await fetch('/api/upload_model', {method:'POST', body:fd});
+            alert("업로드 완료"); location.reload();
+        }
+    </script>
+</body>
+</html>
