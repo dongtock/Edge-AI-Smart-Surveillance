@@ -37,3 +37,20 @@
 | **YOLOv8s** | INT8 | 640x640 | 0.4864 | 0.8462 | 0.7945 | 0.7878 | 0.8012 | 163.88 | 2.48 |
 | **YOLOv8m** | INT8 | 640x640 | 0.3949 | 0.7865 | 0.7534 | 0.7235 | 0.7858 | 114.94 | 4.93 |
 | **YOLOv8l** | INT8 | 640x640 | 0.3904 | 0.7608 | 0.7360 | 0.6877 | 0.7917 | 96.88 | 6.53 |
+
+---
+### 🎥 YOLOv8(&.engine) DeepStream Benchmark Result
+**Tested on Jetson Orin Nano Super (aarch64)**
+
+| Model | FP32 | FP16 | INT8 |
+| :--- | :---: | :---: | :---: |
+| **YOLOv8n** | 120.9 | 211.24 | 232.16 |
+| **YOLOv8s** | 67.5 | 123.87 | 184.18 |
+| **YOLOv8m** | 31.61 | 63.45 | 96.5 |
+| **YOLOv8l** | 20.53 | 40.1 | 70.01 |
+
+> **Environment Details**
+> - **Platform**: Jetson Orin Nano Super (aarch64)
+> - **OS**: Ubuntu 22.04 Jetpack 6.1
+> - **Date**: 2025-12-10
+> - **Settings**: Conf = 0.2 / IoU = 0.5
