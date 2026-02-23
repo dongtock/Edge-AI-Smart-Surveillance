@@ -25,3 +25,4 @@
 #### 🎛️ 3. Threshold Control (추론 임계값 조절)
 ![Threshold Config](./README_static/config_threshold.png)
 - Confidence 및 IoU(NMS) 값을 웹 대시보드에서 실시간으로 조절 반영
+
