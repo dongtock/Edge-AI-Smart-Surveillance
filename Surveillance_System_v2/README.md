@@ -32,6 +32,3 @@
 * **Supported Models**: YOLOv8 Nano(n), Small(s), Medium(m), Large(l) - 총 4종의 최적화된 엔진 지원
 * **On-the-fly Switching**: 웹 UI의 Configuration 메뉴를 통해 실행 중에도 실시간으로 모델 엔진을 교체하고 임계값을 조절할 수 있습니다.
 * **Frontend**: Vanilla JS, HTML5 Canvas HUD, CSS3 Dark Theme
-
----
-*Developed by: An Soyoung*
