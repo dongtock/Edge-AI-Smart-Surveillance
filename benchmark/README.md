@@ -1,5 +1,5 @@
 ##  YOLOv8(*.engine) OpenCV-CUDA Benchmark Results
-**Tested on NVIDIA Jetson AGX Orin Developer Kit**
+**Tested on NVIDIA Jetson AGX Orin **
 
 ### - Single Core Performance -
 
